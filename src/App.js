@@ -5,6 +5,7 @@ function App() {
   const [users, setUsers] = useState([])
   const [firstName, setFirstName] = useState()
   const [lastName, setLastName] = useState()
+  const [isEdited, setIsEditing] = useState(false)
 
   const fetchUsers = async () => {
     const res = await fetch('https://api-dot-mernongae.appspot.com/api/v1/users')
@@ -20,7 +21,8 @@ function App() {
         'Content-Type': 'application/json'
       },
       body: JSON.stringify({
-        firstName, lastName
+        firstName,
+        lastName
       })
     })
     const data = await res.json()
@@ -30,6 +32,32 @@ function App() {
     }
     setFirstName('')
     setLastName('')
+    setIsEditing(false)
+  }
+
+  const editUser = async (id) => {
+    const user = users.find(user => user._id === id)
+    setFirstName(user.firstName)
+    setLastName(user.lastName)
+    setIsEditing(true)
+    
+    // const res = await fetch(`https://api-dot-mernongae.appspot.com/api/v1/users/${id}`, {
+    //   method: 'PUT',
+    //   headers: {
+    //     'Content-Type': 'application/json'
+    //   },
+    //   body: JSON.stringify({
+    //     firstName,
+    //     lastName
+    //   })
+    // })
+    // const data = await res.json()
+    // console.log('data', data)
+    // if (data.success) {
+    //   await fetchUsers()
+    // }
+    // setFirstName('')
+    // setLastName('')
   }
 
   const deleteUser = async (id) => {
@@ -76,7 +104,8 @@ function App() {
             users.map(user => (
               <div key={user._id} className='user'>
                 <li>{user.firstName} {user.lastName}</li>
-                <button onClick={() => deleteUser(user._id)}>X</button>
+                <button onClick={() => editUser(user._id)}>Edit</button>
+                <button onClick={() => deleteUser(user._id)}>Delete</button>
               </div>
             ))
           }
